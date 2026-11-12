@@ -117,6 +117,10 @@ func formatResponseBody(res *http.Response, httpreq *httplib.BeegoHttpRequest, p
 	}
 	if pretty && match {
 		var output bytes.Buffer
+		// Strip a leading UTF-8 BOM so json.Indent can parse the body.
+		if len(body) > 0 && body[0] == 0xEF {
+			body = body[3:]
+		}
 		err := json.Indent(&output, body, "", "  ")
 		if err != nil {
 			log.Fatal("Response Json Indent: ", err)
